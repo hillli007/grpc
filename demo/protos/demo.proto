@@ -1,24 +1,22 @@
 syntax = "proto3";
 
 option java_multiple_files = true;
-option java_package = "io.grpc.examples.helloworld";
-option java_outer_classname = "HelloWorldProto";
-option objc_class_prefix = "HLW";
+option java_package = "com.lxl.demo.grpc";
+option java_outer_classname = "DemoProto";
+option objc_class_prefix = "LXL";
 
 package demo;
 
-// The greeting service definition.
 service Greeter {
-  // Sends a greeting
-  rpc SayHello (HelloRequest) returns (HelloReply) {}
+  rpc SignUP (DemoRequest) returns (DemoReply) {}
+  rpc SignIn (DemoRequest) returns (DemoReply) {}
 }
 
-// The request message containing the user's name.
-message HelloRequest {
-  string name = 1;
+message DemoRequest {
+  string username = 1;
+  string pwd = 2;
 }
 
-// The response message containing the greetings
-message HelloReply {
+message DemoReply {
   string message = 1;
 }

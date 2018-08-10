@@ -1,4 +1,3 @@
-
 HOST_SYSTEM = $(shell uname | cut -f 1 -d_)
 SYSTEM ?= $(HOST_SYSTEM)
 CXX = g++
@@ -21,20 +20,25 @@ PROTOS_PATH = ../protos
 
 vpath %.proto $(PROTOS_PATH)
 
-all: greeter_async_server
+all: demo_server
 
-greeter_async_server: demo.pb.o demo.grpc.pb.o greeter_async_server.o
+demo_server: demo.pb.o demo.grpc.pb.o demo_server.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
+dbtest: dbtest.cc
+	g++ dbtest.cc -o $@ -I. -I mysql-connector/include/jdbc/ -L mysql-connector/lib64 -lmysqlcppconn -lssl -lcrypto
+
+# 服务器
 .PRECIOUS: %.grpc.pb.cc
 %.grpc.pb.cc: %.proto
 	$(PROTOC) -I $(PROTOS_PATH) --grpc_out=. --plugin=protoc-gen-grpc=$(GRPC_CPP_PLUGIN_PATH) $<
 
+# 消息
 .PRECIOUS: %.pb.cc
 %.pb.cc: %.proto
 	$(PROTOC) -I $(PROTOS_PATH) --cpp_out=. $<
 
 clean:
-	rm -f *.o *.pb.cc *.pb.h greeter_async_server
+	rm -f *.o *.pb.cc *.pb.h demo_server dbtest
 
 
