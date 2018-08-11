@@ -22,7 +22,7 @@ vpath %.proto $(PROTOS_PATH)
 
 all: demo_client
 
-demo_client: demo.pb.o demo.grpc.pb.o demo_client.o
+demo_client: demo.pb.o demo.grpc.pb.o demo_client.o greeter_client_impl.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
 .PRECIOUS: %.grpc.pb.cc

@@ -1,0 +1,4 @@
+greeter_client = interface +c {
+    SignIn(name:string , pwd:string): string;
+    SignUp(name:string , pwd:string): string;
+}

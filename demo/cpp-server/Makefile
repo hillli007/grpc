@@ -3,6 +3,9 @@ SYSTEM ?= $(HOST_SYSTEM)
 CXX = g++
 CPPFLAGS += `pkg-config --cflags protobuf grpc`
 CXXFLAGS += -std=c++11
+CXXFLAGS += -I. -Imysql-connector/include/jdbc/
+
+LDFLAGS += -L mysql-connector/lib64 -lmysqlcppconn -lssl -lcrypto
 ifeq ($(SYSTEM),Darwin)
 LDFLAGS += -L/usr/local/lib `pkg-config --libs protobuf grpc++ grpc`\
            -lgrpc++_reflection\
@@ -12,6 +15,7 @@ LDFLAGS += -L/usr/local/lib `pkg-config --libs protobuf grpc++ grpc`\
            -Wl,--no-as-needed -lgrpc++_reflection -Wl,--as-needed\
            -ldl
 endif
+
 PROTOC = protoc
 GRPC_CPP_PLUGIN = grpc_cpp_plugin
 GRPC_CPP_PLUGIN_PATH ?= `which $(GRPC_CPP_PLUGIN)`
@@ -23,12 +27,12 @@ vpath %.proto $(PROTOS_PATH)
 all: demo_server
 
 demo_server: demo.pb.o demo.grpc.pb.o demo_server.o
-	$(CXX) $^ $(LDFLAGS) -o $@
+	$(CXX) $^ $(LDFLAGS) -o $@ -I. -I./mysql-connector/include/jdbc/
 
 dbtest: dbtest.cc
 	g++ dbtest.cc -o $@ -I. -I mysql-connector/include/jdbc/ -L mysql-connector/lib64 -lmysqlcppconn -lssl -lcrypto
 
-# 服务器
+# 服务
 .PRECIOUS: %.grpc.pb.cc
 %.grpc.pb.cc: %.proto
 	$(PROTOC) -I $(PROTOS_PATH) --grpc_out=. --plugin=protoc-gen-grpc=$(GRPC_CPP_PLUGIN_PATH) $<

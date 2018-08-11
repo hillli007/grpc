@@ -65,6 +65,23 @@ add_library(demo_proto_lib SHARED ${DEMO_PROTO_HDRS} ${DEMO_PROTO_SRCS})
 target_link_libraries(demo_proto_lib grpc++ libprotobuf android log)
 
 find_library(log-lib log)
-add_library(grpc-demo SHARED src/main/cpp/grpc-demo.cc)
+
+add_library(grpc-demo
+  SHARED
+  src/main/cpp/grpc-demo.cc
+  src/main/cpp/NativeGreeterClient.cpp
+  src/main/cpp/NativeGreeterClient.hpp
+  ../../cpp-client/greeter_client.hpp
+  ../../cpp-client/greeter_client_impl.cc
+  ../../cpp-client/greeter_client_impl.hpp
+  ../../djinni/support-lib/jni/djinni_main.cpp
+  ../../djinni/support-lib/jni/djinni_support.cpp
+  ../../djinni/support-lib/jni/djinni_support.hpp
+  ../../djinni/support-lib/jni/Marshal.hpp
+)
+
 target_include_directories(grpc-demo PRIVATE ${DEMO_PROTO_HEADERS})
+target_include_directories(grpc-demo PRIVATE ../../djinni/support-lib/jni)
+target_include_directories(grpc-demo PRIVATE ../../cpp-client)
+
 target_link_libraries(grpc-demo demo_proto_lib android ${log-lib})
