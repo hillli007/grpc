@@ -25,8 +25,10 @@ namespace grpcdemo {
         public:
             GreeterClientImpl(const std::string & host_port);
             ~GreeterClientImpl();
-            std::string SignIn(const std::string & name, const std::string & pwd);
+            std::string LogOut(const std::string & platform, const std::string & name, const std::string & pwd);
+            std::string SignIn(const std::string & platform, const std::string & name, const std::string & pwd);
             std::string SignUp(const std::string & name, const std::string & pwd);
+            std::string HeartBeat(const std::string & platform, const std::string & name, const std::string & pwd);
 
         private:
             std::unique_ptr<Greeter::Stub> stub_;

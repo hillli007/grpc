@@ -11,7 +11,11 @@ class GreeterClient {
 public:
     virtual ~GreeterClient() {}
 
-    virtual std::string SignIn(const std::string & name, const std::string & pwd) = 0;
+    virtual std::string HeartBeat(const std::string & platform, const std::string & name, const std::string & pwd) = 0;
+
+    virtual std::string LogOut(const std::string & platform, const std::string & name, const std::string & pwd) = 0;
+
+    virtual std::string SignIn(const std::string & platform, const std::string & name, const std::string & pwd) = 0;
 
     virtual std::string SignUp(const std::string & name, const std::string & pwd) = 0;
 };

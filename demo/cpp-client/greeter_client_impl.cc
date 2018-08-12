@@ -15,14 +15,54 @@ using demo::DemoRequest;
 using demo::DemoReply;
 using demo::Greeter;
 
-std::string grpcdemo::GreeterClientImpl::SignIn(const std::string& name, const std::string& pwd) {
+std::string grpcdemo::GreeterClientImpl::SignIn(const std::string& platform, const std::string& name,
+        const std::string& pwd) {
     DemoRequest request;
+    request.set_platform(platform);
     request.set_username(name);
     request.set_pwd(pwd);
 
     DemoReply reply;
     ClientContext context;
     Status status = stub_->SignIn(&context, request, &reply);
+
+    if (status.ok()) {
+        return reply.message();
+    } else {
+        std::cout << status.error_code() << ": " << status.error_message() << std::endl;
+        return "RPC failed";
+    }
+}
+
+std::string grpcdemo::GreeterClientImpl::LogOut(const std::string& platform, const std::string& name,
+        const std::string& pwd) {
+    DemoRequest request;
+    request.set_platform(platform);
+    request.set_username(name);
+    request.set_pwd(pwd);
+
+    DemoReply reply;
+    ClientContext context;
+    Status status = stub_->LogOut(&context, request, &reply);
+
+    if (status.ok()) {
+        return reply.message();
+    } else {
+        std::cout << status.error_code() << ": " << status.error_message() << std::endl;
+        return "RPC failed";
+    }
+}
+
+std::string grpcdemo::GreeterClientImpl::HeartBeat(const std::string& platform, const std::string& name,
+        const std::string& pwd) {
+    DemoRequest request;
+    request.set_platform(platform);
+    request.set_username(name);
+    request.set_pwd(pwd);
+
+    DemoReply reply;
+    ClientContext context;
+    Status status = stub_->HeartBeat(&context, request, &reply);
 
     if (status.ok()) {
         return reply.message();
@@ -39,7 +79,7 @@ std::string grpcdemo::GreeterClientImpl::SignUp(const std::string& name, const s
 
     DemoReply reply;
     ClientContext context;
-    Status status = stub_->SignUP(&context, request, &reply);
+    Status status = stub_->SignUp(&context, request, &reply);
 
     if (status.ok()) {
         return reply.message();
@@ -56,3 +96,4 @@ grpcdemo::GreeterClientImpl::GreeterClientImpl(const std::string & host_port) {
 
 grpcdemo::GreeterClientImpl::~GreeterClientImpl() {
 }
+

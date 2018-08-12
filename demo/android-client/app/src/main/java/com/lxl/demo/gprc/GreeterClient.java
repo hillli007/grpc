@@ -6,7 +6,11 @@ package com.lxl.demo.gprc;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class GreeterClient {
-    public abstract String SignIn(String name, String pwd);
+    public abstract String HeartBeat(String platform, String name, String pwd);
+
+    public abstract String LogOut(String platform, String name, String pwd);
+
+    public abstract String SignIn(String platform, String name, String pwd);
 
     public abstract String SignUp(String name, String pwd);
 
@@ -34,12 +38,28 @@ public abstract class GreeterClient {
         }
 
         @Override
-        public String SignIn(String name, String pwd)
+        public String HeartBeat(String platform, String name, String pwd)
         {
             assert !this.destroyed.get() : "trying to use a destroyed object";
-            return native_SignIn(this.nativeRef, name, pwd);
+            return native_HeartBeat(this.nativeRef, platform, name, pwd);
         }
-        private native String native_SignIn(long _nativeRef, String name, String pwd);
+        private native String native_HeartBeat(long _nativeRef, String platform, String name, String pwd);
+
+        @Override
+        public String LogOut(String platform, String name, String pwd)
+        {
+            assert !this.destroyed.get() : "trying to use a destroyed object";
+            return native_LogOut(this.nativeRef, platform, name, pwd);
+        }
+        private native String native_LogOut(long _nativeRef, String platform, String name, String pwd);
+
+        @Override
+        public String SignIn(String platform, String name, String pwd)
+        {
+            assert !this.destroyed.get() : "trying to use a destroyed object";
+            return native_SignIn(this.nativeRef, platform, name, pwd);
+        }
+        private native String native_SignIn(long _nativeRef, String platform, String name, String pwd);
 
         @Override
         public String SignUp(String name, String pwd)

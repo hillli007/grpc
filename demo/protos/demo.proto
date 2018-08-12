@@ -8,13 +8,16 @@ option objc_class_prefix = "LXL";
 package demo;
 
 service Greeter {
-  rpc SignUP (DemoRequest) returns (DemoReply) {}
+  rpc SignUp (DemoRequest) returns (DemoReply) {}
   rpc SignIn (DemoRequest) returns (DemoReply) {}
+  rpc LogOut (DemoRequest) returns (DemoReply) {}
+  rpc HeartBeat (DemoRequest) returns (DemoReply) {}
 }
 
 message DemoRequest {
-  string username = 1;
-  string pwd = 2;
+  string platform = 1;
+  string username = 2;
+  string pwd = 3;
 }
 
 message DemoReply {

@@ -50,10 +50,26 @@ public:
 
     Status SignIn(ServerContext* context, const DemoRequest* request, DemoReply* reply) override {
         cout << request->username() << " call SignIn " << request->pwd() << endl;
+        return InnerSignIn(context, request, reply, true, false);
+    }
+
+    Status LogOut(ServerContext* context, const DemoRequest* request, DemoReply* reply) override {
+        cout << request->username() << " call LogOut " << request->pwd() << endl;
+        return InnerSignIn(context, request, reply, false, false);
+    }
+
+    Status HeartBeat(ServerContext* context, const DemoRequest* request, DemoReply* reply) override {
+        cout << request->username() << " call LogOut " << request->pwd() << endl;
+        return InnerSignIn(context, request, reply, false, true);
+    }
+
+    Status InnerSignIn(ServerContext* context, const DemoRequest* request, DemoReply* reply, bool isIn,
+            bool heartbeat) {
 
         Statement* state = con->createStatement();
         state->execute("use demo_db");
 
+        // 查询合法用户
         string sql = "select * from users where user_name='";
         sql += request->username();
         sql += "' and pwd='";
@@ -63,25 +79,45 @@ public:
         ResultSet* result = state->executeQuery(sql);
 
         bool valid = false;
+        string id,curOnlineDevice;
         while (result->next()) {
             try {
-                string user = result->getString("user_name");
                 valid = true;
+                id = result->getString("id_users");
+                curOnlineDevice = result->getString("online");
             } catch (sql::SQLException& e) {
                 cout << e.what() << endl;
             }
         }
 
-        if(valid) {
-            reply->set_message("success");
+        if (valid) {
+            if(heartbeat) {
+                cout << "heartbeat -->" << curOnlineDevice << endl;
+                reply->set_message("heartbeat:" + curOnlineDevice);
+            } else {
+                string platform = request->platform();
+                // 改变登录状态
+                string sql = "UPDATE users SET online='";
+                sql += isIn ? platform : "offline";
+                sql += "' WHERE id_users='";
+                sql += id;
+                sql += "';";
+                cout << sql << endl;
+                int res = state->executeUpdate(sql);
+                if (res == 1) {
+                    reply->set_message("success:" + (isIn ? platform : "logout"));
+                } else {
+                    reply->set_message("success:nochange");
+                }
+            }
         } else {
-            reply->set_message("failed");
+            reply->set_message("failed:nouser");
         }
 
         return Status::OK;
     }
 
-    Status SignUP(ServerContext* context, const DemoRequest* request, DemoReply* reply) override {
+    Status SignUp(ServerContext* context, const DemoRequest* request, DemoReply* reply) override {
         cout << request->username() << " call Sign Up " << request->pwd() << endl;
         Statement* state = con->createStatement();
         state->execute("use demo_db");
@@ -92,7 +128,7 @@ public:
         sql += "', 'false');";
         cout << sql << endl;
         int res = state->executeUpdate(sql);
-        if(res == 1) {
+        if (res == 1) {
             reply->set_message("success");
         } else {
             reply->set_message("failed");
